@@ -1,4 +1,4 @@
-USE `pData`$$
+USE `pFactor`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `buildFactorTable`()
 BEGIN
 
