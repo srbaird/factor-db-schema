@@ -13,7 +13,7 @@ BEGIN
 
 	DECLARE createStmt LONGTEXT;
 
-	DECLARE c1 CURSOR FOR SELECT dsCode, factorTable, factorValueColumn FROM factorCodes;
+	DECLARE c1 CURSOR FOR SELECT c.dsCode, c.factorTable, c.factorValueColumn FROM factorCodes c WHERE c.startDate <= startDate;
 	DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
 
 	SET createStmt = "CREATE TABLE pFactor.factors ("; 
