@@ -17,7 +17,7 @@ CREATE TABLE `factorGroupTypes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `factorGroupCategories` (
-  `factorGroupId` int(11) NOT NULL,
+  `factorGroupId` int(11) NOT NULL AUTO_INCREMENT,
   `factorGroupTypeId` int(11) NOT NULL,
   `factorGroupCategoriesCode` varchar(45) NOT NULL,
   `factorGroupCategoriesDescription` varchar(255) DEFAULT NULL,
@@ -25,6 +25,7 @@ CREATE TABLE `factorGroupCategories` (
   KEY `fk_factorGroupType_idx` (`factorGroupTypeId`),
   CONSTRAINT `fk_factorGroupType` FOREIGN KEY (`factorGroupTypeId`) REFERENCES `factorGroupTypes` (`factorGroupTypeId`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 CREATE TABLE `factorGroups` (
   `factorGroupId` int(11) NOT NULL,
