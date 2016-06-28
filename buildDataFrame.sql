@@ -1,30 +1,37 @@
-USE `pFactor`;
-DROP procedure IF EXISTS `buildDataFrame`;
+TRUNCATE TABLE pFactor.factorCodes;
 
-USE `pFactor`;
-DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `buildDataFrame`(dsCode VARCHAR(45), startDate DATETIME, endDate DATETIME)
-BEGIN
+INSERT	pFactor.factorCodes(dsCode, factorTable, factorValueColumn)
+SELECT	c.dsCode
+,		"pData.currencyValues"
+,		"value"
+FROM	pData.currencies c;
 
-	DECLARE createStmt LONGTEXT;
+INSERT	pFactor.factorCodes(dsCode, factorTable, factorValueColumn)
+SELECT	c.dsCode
+,		"pData.commodityValues"
+,		"value"
+FROM	pData.commodities c;
 
-	CALL `pFactor`.`buildFactorTable`(startDate, endDate);
+INSERT	pFactor.factorCodes(dsCode, factorTable, factorValueColumn)
+SELECT	c.dsCode
+,		"pData.rateValues"
+,		"value"
+FROM	pData.rates c
+WHERE 	c.dsCode IN (
+	SELECT 	v.dsCode
+	FROM	pData.rateValues v
+	WHERE	v.valueDate BETWEEN STR_TO_DATE("01,1,2016","%d,%m,%Y") AND STR_TO_DATE("31,12,2016","%d,%m,%Y")
+	GROUP BY v.dsCode
+	HAVING Count(*) > 100
+);
 
-	SET createStmt =  "SELECT e.dsCode, e.closePrice, f.* FROM 	pData.equityPrices e LEFT JOIN pFactor.factors f ON (e.valueDate = f.valueDate) ";
-	SET createStmt = CONCAT(createStmt, "WHERE 	e.dsCode = ? AND e.valueDate BETWEEN ? AND ?");
+SELECT * FROM pFactor.factorCodes;
 
-	SET @s = createStmt;
-	SET @dsCode = dsCode;
-	SET @startDate = startDate;
-	SET @endDate = endDate;
+CALL `pFactor`.`buildFactorTable`();
 
-	PREPARE selectDataFrame FROM @s;
+SELECT * FROM pFactor.factors;
 
-	INSERT INTO sqlLog(createStmt) VALUES (@s);
 
-	EXECUTE selectDataFrame USING @dsCode,  @startDate, @endDate;
 
-	DEALLOCATE PREPARE selectDataFrame;
 
-END$$
-DELIMITER ;
+
